@@ -222,7 +222,7 @@ def pizza_radar_by_poste(row: pd.Series):
     ax.spines["polar"].set_visible(False)
 
     # ---- AXE: position FIXE
-    ax.set_position([0.15, 0.15, 0.75, 0.75])
+    ax.set_position([0.20, 0.20, 0.70, 0.70])
 
     theta_dense = np.linspace(0, 2*np.pi, 800)
     for r in [25, 50, 75]:
