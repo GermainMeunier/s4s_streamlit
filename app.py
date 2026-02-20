@@ -61,7 +61,7 @@ LABEL_OVERRIDES_BY_POSTE = {
         "Défense": {"r": 103, "dtheta": 0, "ha": "right"},
     },
     "ailier - offensif": {
-        "Dribble": {"r": 105, "dtheta": 0, "ha": "center"},
+        "Dribble": {"r": 130, "dtheta": 0, "ha": "center"},
         "Passe": {"r": 103, "dtheta": 0, "ha": "left"},
         "Finition": {"r": 103, "dtheta": 0, "ha": "left"},
         "Présence": {"r": 105, "dtheta": 0, "ha": "center"},
@@ -245,7 +245,7 @@ def pizza_radar_by_poste(row: pd.Series):
         ax.text(th, min(v + 3, r_outer - 3), f"{int(v)}",
                 ha="center", va="center", fontsize=9)
 
-    base_r = r_outer + 30
+    base_r = r_outer + 5
     for lab, th in zip(labels, mid_angles):
         ov = label_overrides.get(lab, {})
         ax.text(th, ov.get("r", base_r), lab,
