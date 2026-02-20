@@ -144,6 +144,40 @@ VAR_LABELS = {
 # ================================
 st.set_page_config(page_title="Performance & Profil", layout="wide")
 
+st.markdown("""
+<style>
+/* Retire les paddings latéraux/haut */
+.block-container {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 1.0rem;
+    padding-right: 1.0rem;
+    max-width: 100%;
+}
+
+/* Cache l'en-tête Streamlit */
+header {visibility: hidden;}
+/* Cache le menu en bas */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+
+/* Optionnel : cache la barre de déploiement (selon version) */
+.stDeployButton {display:none;}
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<style>
+/* Page pleine hauteur */
+section.main > div {
+    height: 100vh;
+}
+/* Empêche certains débordements */
+div[data-testid="stVerticalBlock"] { gap: 0.6rem; }
+</style>
+""", unsafe_allow_html=True)
+
+
 # Bandeau orange en haut
 st.markdown(
     """
@@ -201,7 +235,7 @@ def pizza_radar_by_poste(row: pd.Series):
     cmap = mpl.colormaps["RdYlGn"]
     colors = [cmap(v / 100) for v in values]
 
-    fig = plt.figure(figsize=(8, 8), dpi=150)
+    fig = plt.figure(figsize=(10, 10), dpi=150)
     ax = plt.subplot(111, polar=True)
     ax.set_theta_offset(np.pi / 2)
     ax.set_theta_direction(-1)
@@ -213,7 +247,7 @@ def pizza_radar_by_poste(row: pd.Series):
     ax.grid(False)
     ax.set_xticks([])
     ax.set_yticks([])
-    ax.set_position([0.08, 0.08, 0.84, 0.78])
+    ax.set_position([0.03, 0.03, 0.94, 0.94])
     ax.spines["polar"].set_visible(False)
 
     theta_dense = np.linspace(0, 2*np.pi, 800)
