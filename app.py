@@ -158,6 +158,19 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+st.markdown("""
+<style>
+/* Réduit les espaces verticaux globaux (optionnel mais efficace) */
+.block-container { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+
+/* Enlève la marge au-dessus des images (st.image) */
+div[data-testid="stImage"] { margin-top: 0rem !important; padding-top: 0rem !important; }
+
+/* Réduit l'espace entre les éléments Streamlit */
+div[data-testid="stVerticalBlock"] > div { gap: 0.35rem; }
+</style>
+""", unsafe_allow_html=True)
+
 @st.cache_data
 def load_csv(path: str) -> pd.DataFrame:
     df = pd.read_csv(path, encoding="utf-8-sig")
@@ -336,6 +349,7 @@ with col_left:
         st.markdown(f"<div style='font-size:20px;'>• {item}</div>", unsafe_allow_html=True)
 
 with col_right:
+    st.markdown("<div style='margin-top:-20px'></div>", unsafe_allow_html=True)
     st.image(radar_png, use_container_width=True)
 
     st.markdown(
