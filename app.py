@@ -5,6 +5,9 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import textwrap
 
+from io import BytesIO
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+
 # ================================
 # CONFIGS (Power BI)
 # ================================
@@ -144,7 +147,6 @@ VAR_LABELS = {
 # ================================
 st.set_page_config(page_title="Performance & Profil", layout="wide")
 
-# Bandeau orange en haut
 st.markdown(
     """
     <div style="background-color:#e6692e; padding:18px 12px; text-align:center;">
@@ -177,8 +179,14 @@ def _poste_fallback(poste: str) -> str:
             return k
     return "defenseur"
 
+def fig_to_png_bytes(fig) -> bytes:
+    canvas = FigureCanvas(fig)
+    buf = BytesIO()
+    canvas.print_png(buf)  # pas de bbox_inches="tight"
+    return buf.getvalue()
+
 # ================================
-# RADAR (Matplotlib, identique Power BI)
+# RADAR -> PNG (taille FIXE)
 # ================================
 def pizza_radar_by_poste(row: pd.Series):
     poste = _poste_fallback(str(row.get("poste", "")))
@@ -201,8 +209,8 @@ def pizza_radar_by_poste(row: pd.Series):
     cmap = mpl.colormaps["RdYlGn"]
     colors = [cmap(v / 100) for v in values]
 
-    # ---- FIGURE: taille FIXE (important)
-    fig = plt.figure(figsize=(4.5, 4.5), dpi=110)
+    # Taille pixel FIXE (ex: 900x900)
+    fig = plt.figure(figsize=(6.0, 6.0), dpi=150)  # 900x900
     fig.set_constrained_layout(False)
 
     ax = plt.subplot(111, polar=True)
@@ -210,10 +218,7 @@ def pizza_radar_by_poste(row: pd.Series):
     ax.set_theta_direction(-1)
 
     r_outer = 100
-
-    # ---- espace réservé pour les labels
-    label_pad = 18
-    ax.set_ylim(0, r_outer + label_pad)
+    ax.set_ylim(0, r_outer + 20)
 
     grey = "#9aa0a6"
     ax.grid(False)
@@ -221,8 +226,8 @@ def pizza_radar_by_poste(row: pd.Series):
     ax.set_yticks([])
     ax.spines["polar"].set_visible(False)
 
-    # ---- AXE: position FIXE
-    ax.set_position([0.20, 0.20, 0.70, 0.70])
+    # axe plus petit pour laisser la place aux labels
+    ax.set_position([0.14, 0.14, 0.72, 0.72])
 
     theta_dense = np.linspace(0, 2*np.pi, 800)
     for r in [25, 50, 75]:
@@ -231,33 +236,28 @@ def pizza_radar_by_poste(row: pd.Series):
     for th in np.append(angles, angles[0]):
         ax.plot([th, th], [0, r_outer + 3], color=grey, lw=1, alpha=0.35)
 
-    ax.bar(
-        angles, values, width=width, bottom=0, align="edge",
-        color=colors, edgecolor=grey, linewidth=1.2
-    )
+    ax.bar(angles, values, width=width, bottom=0, align="edge",
+           color=colors, edgecolor=grey, linewidth=1.2)
 
     ax.plot(theta_dense, np.full_like(theta_dense, r_outer), color="#222222", lw=1.1)
 
-    # ---- valeurs
+    # valeurs
     for th, v in zip(mid_angles, values):
         ax.text(th, min(v + 3, r_outer - 3), f"{int(v)}",
-                ha="center", va="center", fontsize=8)
+                ha="center", va="center", fontsize=10, fontweight="bold")
 
-    # ---- labels
-    base_r = r_outer + 5
+    # labels
+    base_r = r_outer + 10
     for lab, th in zip(labels, mid_angles):
         ov = label_overrides.get(lab, {})
         r_lab = ov.get("r", base_r)
+        ax.text(th, r_lab, lab,
+                ha=ov.get("ha", "center"), va="center",
+                fontsize=20, clip_on=False)
 
-        ax.text(
-            th, r_lab, lab,
-            ha=ov.get("ha", "center"),
-            va="center",
-            fontsize=12,
-            clip_on=False
-        )
-
-    return poste, values, fig
+    png = fig_to_png_bytes(fig)
+    plt.close(fig)
+    return poste, values, png
 
 # ================================
 # FORCES / FAIBLESSES (liste 5/5)
@@ -286,15 +286,13 @@ def strengths_weaknesses_always5(row: pd.Series, max_items=5):
     return [label(c) for c, _ in forces], [label(c) for c, _ in faiblesses]
 
 # ================================
-# UI LAYOUT EXACT (gauche infos, droite radar, phrase bas droite)
+# UI LAYOUT
 # ================================
 st.markdown("<div style='height:10px;'></div>", unsafe_allow_html=True)
 
-# 2 colonnes: gauche (contrôles + textes), droite (radar + phrase)
 col_left, col_right = st.columns([1.25, 1.25], vertical_alignment="top")
 
 with col_left:
-    # Choix joueur en haut à gauche
     player = st.selectbox("Joueur", sorted(df["player"].unique()))
 
     row_df = df[df["player"] == player]
@@ -303,12 +301,10 @@ with col_left:
         st.stop()
     row = row_df.iloc[0]
 
-    poste, radar_values, fig_radar = pizza_radar_by_poste(row)
+    poste, radar_values, radar_png = pizza_radar_by_poste(row)
 
-    # Poste dessous
     st.markdown(f"<div style='font-size:30px; font-weight:700; margin-top:8px;'>{poste}</div>", unsafe_allow_html=True)
 
-    # Score moyen + classement sur la même ligne
     score_moyen = float(np.mean(radar_values)) if len(radar_values) else np.nan
     rank_txt = "—"
     if "global_rank" in row.index and "global_n" in row.index:
@@ -325,7 +321,6 @@ with col_left:
         st.markdown("<div style='font-weight:700; text-decoration:underline;'>Classement</div>", unsafe_allow_html=True)
         st.markdown(f"<div style='font-size:64px; font-weight:800;'>{rank_txt}</div>", unsafe_allow_html=True)
 
-    # Forces / Faiblesses listes
     forces, faiblesses = strengths_weaknesses_always5(row, max_items=5)
 
     st.markdown("<div style='height:12px;'></div>", unsafe_allow_html=True)
@@ -341,10 +336,8 @@ with col_left:
         st.markdown(f"<div style='font-size:20px;'>• {item}</div>", unsafe_allow_html=True)
 
 with col_right:
-    # Radar prend tout le côté droit
-    st.pyplot(fig_radar, clear_figure=True, use_container_width=True)
+    st.image(radar_png, use_container_width=True)
 
-    # Phrase en bas à droite sous le radar
     st.markdown(
         """
         <div style="text-align:right; font-weight:800; margin-top:10px;">
