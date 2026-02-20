@@ -61,12 +61,12 @@ LABEL_OVERRIDES_BY_POSTE = {
         "Défense": {"r": 103, "dtheta": 0, "ha": "right"},
     },
     "ailier - offensif": {
-        "Dribble": {"r": 130, "dtheta": 0, "ha": "center"},
-        "Passe": {"r": 103, "dtheta": 0, "ha": "left"},
-        "Finition": {"r": 103, "dtheta": 0, "ha": "left"},
-        "Présence": {"r": 105, "dtheta": 0, "ha": "center"},
-        "Impact": {"r": 103, "dtheta": 0, "ha": "right"},
-        "Défense": {"r": 103, "dtheta": 0, "ha": "right"},
+        "Dribble": {"r": 110, "dtheta": 0, "ha": "center"},
+        "Passe": {"r": 110, "dtheta": 0, "ha": "left"},
+        "Finition": {"r": 110, "dtheta": 0, "ha": "left"},
+        "Présence": {"r": 110, "dtheta": 0, "ha": "center"},
+        "Impact": {"r": 110, "dtheta": 0, "ha": "right"},
+        "Défense": {"r": 110, "dtheta": 0, "ha": "right"},
     },
     "milieu": {
         "Présence": {"r": 105, "dtheta": 0, "ha": "center"},
