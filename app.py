@@ -171,7 +171,7 @@ st.markdown(
 
 @st.cache_data
 def load_csv(path: str) -> pd.DataFrame:
-    df = pd.read_csv(path)
+    df = pd.read_csv(path, encoding="utf-8-sig")
     df.columns = [c.strip() for c in df.columns]
     if "Unnamed: 0" in df.columns:
         df = df.drop(columns=["Unnamed: 0"])
@@ -179,7 +179,7 @@ def load_csv(path: str) -> pd.DataFrame:
     df["player"] = df["player"].astype(str).str.strip()
     return df
 
-df = load_csv("data/data.csv", encoding="utf-8-sig")
+df = load_csv("data/data.csv")
 
 def _poste_fallback(poste: str) -> str:
     poste = (poste or "").strip().lower()
