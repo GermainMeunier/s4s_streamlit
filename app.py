@@ -336,14 +336,8 @@ with col_left:
         st.markdown(f"<div style='font-size:20px;'>• {item}</div>", unsafe_allow_html=True)
 
 with col_right:
-
-    # Décalage vertical pour aligner avec le selectbox
-    st.markdown("<div style='height:60px;'></div>", unsafe_allow_html=True)
-
-    # Radar
     st.image(radar_png, use_container_width=True)
 
-    # Phrase
     st.markdown(
         """
         <div style="text-align:right; font-weight:800; margin-top:10px;">
