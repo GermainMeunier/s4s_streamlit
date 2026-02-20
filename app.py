@@ -383,7 +383,7 @@ with col_right:
     
         .radar-caption { 
             position: absolute;
-            bottom: 150px;     /* distance du bas de l'image */
+            bottom: 20px;     /* distance du bas de l'image */
             right: 0;
             font-weight: 800;
             text-align: right;
