@@ -144,6 +144,28 @@ VAR_LABELS = {
 # ================================
 st.set_page_config(page_title="Performance & Profil", layout="wide")
 
+st.markdown("""
+<style>
+/* Retire les paddings latéraux/haut */
+.block-container {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 1.0rem;
+    padding-right: 1.0rem;
+    max-width: 100%;
+}
+
+/* Cache l'en-tête Streamlit */
+header {visibility: hidden;}
+/* Cache le menu en bas */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+
+/* Optionnel : cache la barre de déploiement (selon version) */
+.stDeployButton {display:none;}
+</style>
+""", unsafe_allow_html=True)
+
 # Bandeau orange en haut
 st.markdown(
     """
