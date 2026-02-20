@@ -144,12 +144,6 @@ VAR_LABELS = {
 # ================================
 st.set_page_config(page_title="Performance & Profil", layout="wide")
 
-/* Cache l'en-tête Streamlit */
-header {visibility: hidden;}
-/* Cache le menu en bas */
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-
 # Bandeau orange en haut
 st.markdown(
     """
