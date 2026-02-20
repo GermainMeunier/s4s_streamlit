@@ -235,7 +235,7 @@ def pizza_radar_by_poste(row: pd.Series):
     cmap = mpl.colormaps["RdYlGn"]
     colors = [cmap(v / 100) for v in values]
 
-    fig = plt.figure(figsize=(10, 10), dpi=150)
+    fig = plt.figure(figsize=(6, 6), dpi=150)
     ax = plt.subplot(111, polar=True)
     ax.set_theta_offset(np.pi / 2)
     ax.set_theta_direction(-1)
@@ -247,7 +247,7 @@ def pizza_radar_by_poste(row: pd.Series):
     ax.grid(False)
     ax.set_xticks([])
     ax.set_yticks([])
-    ax.set_position([0.03, 0.03, 0.94, 0.94])
+    ax.set_position([0.08, 0.08, 0.90, 0.90])
     ax.spines["polar"].set_visible(False)
 
     theta_dense = np.linspace(0, 2*np.pi, 800)
@@ -307,7 +307,7 @@ def strengths_weaknesses_always5(row: pd.Series, max_items=5):
 st.markdown("<div style='height:10px;'></div>", unsafe_allow_html=True)
 
 # 2 colonnes: gauche (contrôles + textes), droite (radar + phrase)
-col_left, col_right = st.columns([1.15, 1.35], vertical_alignment="top")
+col_left, col_right = st.columns([1.25, 1.25], vertical_alignment="top")
 
 with col_left:
     # Choix joueur en haut à gauche
