@@ -147,6 +147,7 @@ VAR_LABELS = {
 # ================================
 st.set_page_config(page_title="Performance & Profil", layout="wide")
 
+# Bandeau orange
 st.markdown(
     """
     <div style="background-color:#e6692e; padding:18px 12px; text-align:center;">
@@ -158,33 +159,24 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.markdown("""
+# CSS: on garde le bandeau, on réduit seulement l'espace "au-dessus" du contenu,
+# et on colle image + phrase dans la colonne radar via une classe wrapper.
+st.markdown(
+    """
 <style>
-/* On ne touche PAS au bandeau, on cible uniquement la colonne qui contient #radar-anchor */
-div[data-testid="column"]:has(#radar-anchor) {
-    padding-top: 0rem !important;
-    margin-top: 0rem !important;
-}
+/* Réduit l'espace standard au-dessus du contenu (sans casser le bandeau) */
+section.main > div.block-container { padding-top: 0.75rem; }
 
-/* Le bloc image dans cette colonne : supprimer l’espace au-dessus */
-div[data-testid="column"]:has(#radar-anchor) div[data-testid="stImage"]{
-    margin-top: 0rem !important;
-    padding-top: 0rem !important;
-    margin-bottom: 0.15rem !important;  /* phrase juste dessous */
-}
+/* Wrapper radar: retire les marges entre image et phrase */
+.radar-wrap div[data-testid="stImage"] { margin-bottom: 0.10rem !important; }
+.radar-wrap p, .radar-wrap div { margin-top: 0rem !important; padding-top: 0rem !important; }
 
-/* Réduit le “gap” vertical uniquement dans la colonne radar */
-div[data-testid="column"]:has(#radar-anchor) div[data-testid="stVerticalBlock"] > div {
-    gap: 0.15rem !important;
-}
+/* Réduit les "gaps" internes dans la colonne radar seulement */
+.radar-wrap div[data-testid="stVerticalBlock"] > div { gap: 0.20rem !important; }
 </style>
-""", unsafe_allow_html=True)
-
-
-
-
-
-
+""",
+    unsafe_allow_html=True,
+)
 
 @st.cache_data
 def load_csv(path: str) -> pd.DataFrame:
@@ -210,7 +202,7 @@ def _poste_fallback(poste: str) -> str:
 def fig_to_png_bytes(fig) -> bytes:
     canvas = FigureCanvas(fig)
     buf = BytesIO()
-    canvas.print_png(buf)  # pas de bbox_inches="tight"
+    canvas.print_png(buf)  # surtout pas bbox_inches="tight" sinon taille variable
     return buf.getvalue()
 
 # ================================
@@ -237,7 +229,6 @@ def pizza_radar_by_poste(row: pd.Series):
     cmap = mpl.colormaps["RdYlGn"]
     colors = [cmap(v / 100) for v in values]
 
-    # Taille pixel FIXE (ex: 900x900)
     fig = plt.figure(figsize=(6.0, 6.0), dpi=150)  # 900x900
     fig.set_constrained_layout(False)
 
@@ -254,8 +245,7 @@ def pizza_radar_by_poste(row: pd.Series):
     ax.set_yticks([])
     ax.spines["polar"].set_visible(False)
 
-    # axe plus petit pour laisser la place aux labels
-    ax.set_position([0.14, 0.14, 0.72, 0.72])
+    ax.set_position([0.14, 0.14, 0.72, 0.72])  # fixe => rendu constant
 
     theta_dense = np.linspace(0, 2*np.pi, 800)
     for r in [25, 50, 75]:
@@ -269,10 +259,10 @@ def pizza_radar_by_poste(row: pd.Series):
 
     ax.plot(theta_dense, np.full_like(theta_dense, r_outer), color="#222222", lw=1.1)
 
-    # valeurs
+    # valeurs (pas en gras)
     for th, v in zip(mid_angles, values):
         ax.text(th, min(v + 3, r_outer - 3), f"{int(v)}",
-                ha="center", va="center", fontsize=8)
+                ha="center", va="center", fontsize=8, fontweight="normal")
 
     # labels
     base_r = r_outer + 10
@@ -304,7 +294,6 @@ def strengths_weaknesses_always5(row: pd.Series, max_items=5):
         return [], []
 
     vals_sorted = sorted(vals, key=lambda x: x[1], reverse=True)
-
     forces = vals_sorted[:max_items]
     faiblesses = list(reversed(vals_sorted[-max_items:]))
 
@@ -316,7 +305,7 @@ def strengths_weaknesses_always5(row: pd.Series, max_items=5):
 # ================================
 # UI LAYOUT
 # ================================
-st.markdown("<div style='height:10px;'></div>", unsafe_allow_html=True)
+st.markdown("<div style='height:6px;'></div>", unsafe_allow_html=True)
 
 col_left, col_right = st.columns([1.15, 1.35], vertical_alignment="top")
 
@@ -364,9 +353,15 @@ with col_left:
         st.markdown(f"<div style='font-size:20px;'>• {item}</div>", unsafe_allow_html=True)
 
 with col_right:
-    st.markdown("<div id='radar-anchor'></div>", unsafe_allow_html=True)
+    # Wrapper radar pour CSS ciblé + "spacer négatif" juste ici (le plus efficace)
+    st.markdown("<div class='radar-wrap'>", unsafe_allow_html=True)
+
+    # Remonte le bloc radar au max, sans toucher au bandeau
+    st.markdown("<div style='margin-top:-14px'></div>", unsafe_allow_html=True)
+
     st.image(radar_png, use_container_width=True)
 
+    # Phrase collée sous le radar
     st.markdown(
         """
         <div style="text-align:right; font-weight:800; margin-top:0px; padding-top:0px;">
@@ -375,3 +370,5 @@ with col_right:
         """,
         unsafe_allow_html=True,
     )
+
+    st.markdown("</div>", unsafe_allow_html=True)
