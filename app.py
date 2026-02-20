@@ -174,6 +174,13 @@ section.main > div.block-container { padding-top: 0.75rem; }
 
 /* Réduit les "gaps" internes dans la colonne radar seulement */
 .radar-wrap div[data-testid="stVerticalBlock"] > div { gap: 0.20rem !important; }
+
+/* Cache l'en-tête Streamlit */
+header {visibility: hidden;}
+/* Cache le menu en bas */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+
 </style>
 """,
     unsafe_allow_html=True,
