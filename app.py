@@ -201,20 +201,28 @@ def pizza_radar_by_poste(row: pd.Series):
     cmap = mpl.colormaps["RdYlGn"]
     colors = [cmap(v / 100) for v in values]
 
-    fig = plt.figure(figsize=(4, 4), dpi=130)
+    # ---- FIGURE: taille FIXE (important)
+    fig = plt.figure(figsize=(4.0, 4.0), dpi=130)
+    fig.set_constrained_layout(False)
+
     ax = plt.subplot(111, polar=True)
     ax.set_theta_offset(np.pi / 2)
     ax.set_theta_direction(-1)
 
     r_outer = 100
-    ax.set_ylim(0, r_outer + 5)
+
+    # ---- espace réservé pour les labels (important)
+    label_pad = 18
+    ax.set_ylim(0, r_outer + label_pad)
 
     grey = "#9aa0a6"
     ax.grid(False)
     ax.set_xticks([])
     ax.set_yticks([])
-    ax.set_position([0.08, 0.08, 0.90, 0.90])
     ax.spines["polar"].set_visible(False)
+
+    # ---- AXE: position FIXE
+    ax.set_position([0.08, 0.08, 0.84, 0.84])
 
     theta_dense = np.linspace(0, 2*np.pi, 800)
     for r in [25, 50, 75]:
@@ -223,22 +231,34 @@ def pizza_radar_by_poste(row: pd.Series):
     for th in np.append(angles, angles[0]):
         ax.plot([th, th], [0, r_outer + 3], color=grey, lw=1, alpha=0.35)
 
-    ax.bar(angles, values, width=width, bottom=0, align="edge",
-           color=colors, edgecolor=grey, linewidth=1.2)
+    ax.bar(
+        angles, values, width=width, bottom=0, align="edge",
+        color=colors, edgecolor=grey, linewidth=1.2
+    )
 
     ax.plot(theta_dense, np.full_like(theta_dense, r_outer), color="#222222", lw=1.1)
 
+    # ---- valeurs: plus petites
     for th, v in zip(mid_angles, values):
         ax.text(th, min(v + 3, r_outer - 3), f"{int(v)}",
-                ha="center", va="center", fontsize=9)
+                ha="center", va="center", fontsize=8, fontweight="bold")
 
-    base_r = r_outer + 5
+    # ---- labels: éloignés + NO CLIP bbox (stabilité)
+    base_r = r_outer + 10
     for lab, th in zip(labels, mid_angles):
         ov = label_overrides.get(lab, {})
-        ax.text(th, ov.get("r", base_r), lab,
-                ha=ov.get("ha", "center"), va="center", fontsize=12)
 
-    fig.subplots_adjust(left=0.10, right=0.90, top=0.88, bottom=0.10)
+        # applique override SI présent, mais en restant dans la zone visible
+        r_lab = ov.get("r", base_r)
+
+        ax.text(
+            th, r_lab, lab,
+            ha=ov.get("ha", "center"),
+            va="center",
+            fontsize=13,
+            clip_on=True  # empêche que ça change la bbox de la figure
+        )
+
     return poste, values, fig
 
 # ================================
