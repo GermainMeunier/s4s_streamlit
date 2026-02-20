@@ -369,9 +369,26 @@ with col_right:
     st.markdown(
         """
         <style>
-        .radar-wrap { margin-top: -40px; } 
-        .radar-wrap img { display:block; width:100%; height:auto; margin:0 ; }
-        .radar-caption { text-align:right; font-weight:800; margin-top:-500px; padding-top:0 }
+        .radar-wrap { 
+            margin-top: -40px; 
+            position: relative;
+        }
+    
+        .radar-wrap img { 
+            display:block; 
+            width:100%; 
+            height:auto; 
+            margin:0;
+        }
+    
+        .radar-caption { 
+            position: absolute;
+            bottom: 10px;     /* distance du bas de l'image */
+            right: 0;
+            font-weight: 800;
+            text-align: right;
+            width: 100%;
+        }
         </style>
         """,
         unsafe_allow_html=True,
