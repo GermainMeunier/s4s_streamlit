@@ -179,7 +179,7 @@ def load_csv(path: str) -> pd.DataFrame:
     df["player"] = df["player"].astype(str).str.strip()
     return df
 
-df = load_csv("data/data.csv")
+df = load_csv("data/data.csv", encoding="utf-8-sig")
 
 def _poste_fallback(poste: str) -> str:
     poste = (poste or "").strip().lower()
