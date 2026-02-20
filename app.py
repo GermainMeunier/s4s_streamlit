@@ -369,9 +369,9 @@ with col_right:
     st.markdown(
         """
         <style>
-        .radar-wrap { margin-top: -60px; } 
+        .radar-wrap { margin-top: -40px; } 
         .radar-wrap img { display:block; width:100%; height:auto; margin:0 ; }
-        .radar-caption { text-align:right; font-weight:800; margin-top:6px; }
+        .radar-caption { text-align:right; font-weight:800; margin-top:-60px; padding-top:0 }
         </style>
         """,
         unsafe_allow_html=True,
