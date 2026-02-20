@@ -159,44 +159,28 @@ st.markdown(
 )
 
 st.markdown("""
-    <style>
-    /* Réduit les espaces verticaux globaux (optionnel mais efficace) */
-    .block-container { padding-top: 0.5rem; padding-bottom: 0.5rem; }
-    
-    /* Enlève la marge au-dessus des images (st.image) */
-    div[data-testid="stImage"] { margin-top: 0rem !important; padding-top: 0rem !important; }
-    
-    /* Réduit l'espace entre les éléments Streamlit */
-    div[data-testid="stVerticalBlock"] > div { gap: 0.35rem; }
-    </style>
-    """, unsafe_allow_html=True
-)
+<style>
+/* On ne touche PAS au bandeau, on cible uniquement la colonne qui contient #radar-anchor */
+div[data-testid="column"]:has(#radar-anchor) {
+    padding-top: 0rem !important;
+    margin-top: 0rem !important;
+}
 
-st.markdown(
-    """
-    <style>
+/* Le bloc image dans cette colonne : supprimer l’espace au-dessus */
+div[data-testid="column"]:has(#radar-anchor) div[data-testid="stImage"]{
+    margin-top: 0rem !important;
+    padding-top: 0rem !important;
+    margin-bottom: 0.15rem !important;  /* phrase juste dessous */
+}
 
-    /* Réduit fortement l'espace au-dessus du premier élément de la colonne droite */
-    div[data-testid="column"]:nth-of-type(2) > div {
-        padding-top: 0rem !important;
-        margin-top: 0rem !important;
-    }
+/* Réduit le “gap” vertical uniquement dans la colonne radar */
+div[data-testid="column"]:has(#radar-anchor) div[data-testid="stVerticalBlock"] > div {
+    gap: 0.15rem !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
-    /* L'image (radar) : enlever les marges/paddings parasites */
-    div[data-testid="column"]:nth-of-type(2) div[data-testid="stImage"] {
-        margin-top: 0rem !important;
-        padding-top: 0rem !important;
-        margin-bottom: 0.15rem !important;
-    }
 
-    /* Empêche un espace vertical inutile entre les blocs dans la colonne droite */
-    div[data-testid="column"]:nth-of-type(2) div[data-testid="stVerticalBlock"] > div {
-        gap: 0.15rem !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
 
 
 
@@ -380,6 +364,7 @@ with col_left:
         st.markdown(f"<div style='font-size:20px;'>• {item}</div>", unsafe_allow_html=True)
 
 with col_right:
+    st.markdown("<div id='radar-anchor'></div>", unsafe_allow_html=True)
     st.image(radar_png, use_container_width=True)
 
     st.markdown(
