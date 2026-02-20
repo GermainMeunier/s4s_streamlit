@@ -259,8 +259,6 @@ def pizza_radar_by_poste(row: pd.Series):
             clip_on=False
         )
 
-    fig.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.02)
-
     return poste, values, fig
 
 # ================================
